@@ -6,8 +6,12 @@ const openai = new OpenAI({
 });
 
 let threadByUser: any; // Store thread IDs by user
+let chatObject: ChatObject;
+
 
 class ChatController {
+  chatObject = new ChatObject();
+
 
   public async health(req: Request, res: Response): Promise<void> {
     try {
@@ -32,6 +36,7 @@ class ChatController {
 
     const assistantIdToUse = "asst_A9nEPE3ihrQWMisYAGvZDiCi"; // Replace with your assistant ID
     const userId = req.body.userId; // You should include the user ID in the request
+  
 
     // Create a new thread if it's the user's first message
     if (threadByUser === undefined || !threadByUser[userId]) {
@@ -46,8 +51,11 @@ class ChatController {
         return;
       }
     }
+    chatObject.thread = threadByUser[userId];
 
     const userMessage = req.body.message;
+
+    chatObject.messages?.push(userMessage);
 
     // Add a Message to the Thread
     try {
@@ -103,13 +111,15 @@ class ChatController {
           threadByUser[userId] // Use the stored thread ID for this user
         );
 
-        console.log("==========>allMessages: ", allMessages);
         
         const content: any = allMessages.data[0].content.at(0);
-        console.log("==========>: ",  content.text.value);
+        
+        const assistantMessage = content.text.value;
+        chatObject.messages?.push(assistantMessage);
+
         // Send the response back to the front end
         res.status(200).json({
-          response: content.text.value,
+          response: assistantMessage,
         });
         console.log(
           "------------------------------------------------------------ \n"
@@ -141,3 +151,18 @@ class ChatController {
 }
 
 export default ChatController;
+
+
+class ChatObject {
+  thread?: string;
+  messages?: Array<String>;
+  date?: Date;
+
+  constructor() {
+    this.messages = [];
+  }
+
+}
+
+
+

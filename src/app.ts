@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import bodyParser from 'body-parser';
 import chatRouter from './routes/chat.route';
 import connectDB from './config/database';
+import healthRouter from './routes/health';
 
 class App {
   private app: Application;
@@ -20,6 +21,7 @@ class App {
   }
 
   private routes(): void {
+    this.app.use('/', healthRouter);
     this.app.use('/chat', chatRouter);
   }
 
