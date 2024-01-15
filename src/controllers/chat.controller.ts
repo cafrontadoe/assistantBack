@@ -51,11 +51,16 @@ class ChatController {
         return;
       }
     }
-    chatObject.thread = threadByUser[userId];
+    // chatObject.thread = threadByUser[userId];
 
     const userMessage = req.body.message;
+    if(chatObject && chatObject.messages){
+      // chatObject.messages?.push(userMessage);
 
-    chatObject.messages?.push(userMessage);
+    }else {
+      chatObject = new ChatObject();
+      chatObject.messages = userMessage;
+    }
 
     // Add a Message to the Thread
     try {
@@ -113,10 +118,12 @@ class ChatController {
 
         
         const content: any = allMessages.data[0].content.at(0);
-        
+          console.log(content);
         const assistantMessage = content.text.value;
-        chatObject.messages?.push(assistantMessage);
-
+        if(chatObject && chatObject.messages){
+          // chatObject.messages.push(assistantMessage);
+        }
+        
         // Send the response back to the front end
         res.status(200).json({
           response: assistantMessage,
@@ -156,10 +163,10 @@ export default ChatController;
 class ChatObject {
   thread?: string;
   messages?: Array<String>;
-  date?: Date;
 
   constructor() {
     this.messages = [];
+    this.thread = '';
   }
 
 }

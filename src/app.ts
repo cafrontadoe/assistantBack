@@ -3,6 +3,8 @@ import bodyParser from 'body-parser';
 import chatRouter from './routes/chat.route';
 import connectDB from './config/database';
 import healthRouter from './routes/health';
+import cors from 'cors';
+
 
 class App {
   private app: Application;
@@ -11,6 +13,11 @@ class App {
     this.app = express();
     // Connect to MongoDB
     // connectDB();
+    const corsOptions = {
+      origin: true, // Replace with your Angular app's URL
+      credentials: true, // Enable cookie sharing
+    };
+    this.app.use(cors(corsOptions))
     this.config();
     this.routes();
   }
